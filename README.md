@@ -1,75 +1,75 @@
-# aave-credit-scoring
 # Aave V2 Wallet Credit Scoring System
 
-A machine learning model that assigns credit scores (0-1000) to Ethereum wallets based on their transaction history in Aave V2. Higher scores indicate responsible borrowing behavior, while lower scores flag risky or exploitative activity.
+## Overview
+This repository contains a machine learning solution for assigning credit scores (0-1000) to Ethereum wallets based on their transaction history with Aave V2. The system evaluates wallet behavior patterns to assess creditworthiness.
 
-## 📌 Problem Statement
-Develop a system to:
-1. Extract meaningful features from raw Aave V2 transaction data
-2. Generate credit scores (0-1000) for each wallet
-3. Explain the scoring logic transparently
-4. Analyze score distribution and behavioral patterns
+## Methodology
 
-## 🛠️ Solution Architecture
-graph TD
-    A[Raw JSON Data] --> B[Data Preprocessing]
-    B --> C[Feature Engineering]
-    C --> D[Scoring Model]
-    D --> E[Score Analysis]
-    E --> F[Output Reports]
-credit_score = 
-  300 * (deposit_borrow_ratio_normalized) +
-  250 * (repay_ratio_normalized) +
-  200 * (1 - health_ratio_penalty) +
-  150 * (asset_diversity_score) -
-  500 * (liquidation_count) -
-  200 * (high_risk_behavior_flag)
+### Data Processing Pipeline
+1. **Data Loading**: Reads raw JSON transaction data
+2. **Feature Extraction**:
+   - Transaction counts (deposits, borrows, repayments)
+   - Financial ratios (deposit/borrow, borrow/repay)
+   - Time-based features (activity duration, transaction frequency)
+   - Risk indicators (liquidation events)
+3. **Feature Engineering**:
+   - Logarithmic transforms for monetary values
+   - Composite metrics (health ratio, behavior score)
+4. **Scoring Model**:
+   - Isolation Forest for anomaly detection
+   - Behavior score for positive patterns
+   - Weighted combination of both approaches
 
-How to Run
-bash
-# Install dependencies
-pip install pandas numpy scikit-learn matplotlib
+### Key Features Considered
+- **Responsible Behavior**:
+  - High deposit-to-borrow ratios
+  - Consistent repayments
+  - Long activity duration
+- **Risky Behavior**:
+  - Frequent liquidations
+  - High borrowing with low repayment
+  - Short-term "flash loan" patterns
 
-# Run the scoring pipeline
-python generate_scores.py input_transactions.json output_scores.csv
+## Usage
 
-Output Files
-wallet_credit_scored.csv:
+### Requirements
+- Python 3.7+
+- Libraries: pandas, numpy, scikit-learn, matplotlib, seaborn, tqdm
 
-Complete dataset with all features + scores
+### Installation
+pip install -r requirements.txt
+Running the Analysis
+python credit_scoring.py
 
-Columns: wallet, credit_score, tx_count, deposit_value, ..., risk_factors
+Outputs
+wallet_credit_scores.csv: All wallets with their credit scores
 
-analysis.md:
+score_distribution.png: Visualization of score distribution
 
-Score distribution analysis
+analysis.md: Summary of findings and example wallets
 
-Top/Risky wallet case studies
+Score Interpretation
+Score Range	Risk Level	Characteristics
+900-1000	Excellent	High deposits, consistent repayments, no liquidations
+700-899	Good	Healthy ratios, occasional borrowing
+400-699	Moderate	Some risky behavior but with mitigations
+200-399	Risky	High borrowing, low repayment
+0-199	Very Risky	Frequent liquidations, exploit-like patterns
 
-Feature importance visualization
+Limitations
+Only considers on-chain Aave V2 activity
 
-📈 Key Findings
-Score Distribution:
+Doesn't incorporate wallet history outside Aave
 
-15% wallets scored >800 (excellent)
+Short timeframes may affect score stability
 
-22% wallets scored <200 (high risk)
+First-time borrowers may be under-scored
 
-High-Score Traits:
+Future Improvements
+Incorporate DeFi portfolio diversity
 
-Median deposit/borrow ratio: 8.7x
+Add time-weighted scoring
 
-0 liquidations in 99.2% of cases
+Include off-chain credit data
 
-Risk Red Flags:
-
-Borrow/repay ratio <0.1 → 83% chance of liquidation
-
-Wallets with time_std_hours >100 → 5x more likely to be bots
-
-🚨 Limitations
-New wallets (<5 tx) may receive provisional scores
-
-Flash loan detection requires additional on-chain analysis
-
-Protocol-specific risks (e.g., Aave v2 vs v3) not differentiated
+Implement real-time scoring updates
