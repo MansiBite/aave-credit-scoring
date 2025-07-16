@@ -11,7 +11,6 @@ Develop a system to:
 4. Analyze score distribution and behavioral patterns
 
 ## 🛠️ Solution Architecture
-```mermaid
 graph TD
     A[Raw JSON Data] --> B[Data Preprocessing]
     B --> C[Feature Engineering]
